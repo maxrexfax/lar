@@ -1,0 +1,23 @@
+html {
+    font-size: 1em;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.miniwidth {
+    min-width: 100px;
+}
+.margin-els{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.center-text{
+    text-align: center;
+}
+.errorStatus{
+    background-color: #f66d9b;
+}
+.successStatus{
+    background-color: lightgreen;
+}
+.infoStatus{
+    background-color: #a0aec0;
+}
