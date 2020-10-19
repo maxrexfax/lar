@@ -42,3 +42,5 @@ Route::get('/usercreate', [UserslistController::class, 'createnewuser'])->name('
 Route::match(['get'], '/messages', [MessageController::class, 'index'])->name('messages');
 
 Route::match(['get', 'post'], '/messages/create', [MessageController::class, 'create'])->name('messages.create');
+
+Route::match(['get', 'post'], '/messages/show', [MessageController::class, 'show'])->name('messages.show');

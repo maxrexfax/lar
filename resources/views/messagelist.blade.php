@@ -14,50 +14,92 @@
                             </div>
                             {{ __('List of users:') }}
                         @endif
-                        <p>---------------Debug all messages START---------------</p>
-                            @foreach($messages as $message)
-                                The author <i>{{$message->author->login}}</i> wrotes to user <i>{{$message->recipient->login}}</i> message: <b> {{$message->text}}</b><br>
-                            @endforeach
-                            <p>--------------Debug all messages END---------------</p>
-                            <br>
-                            <h3>Outgoing messages</h3>
-                            <div class="table-responsive">
-                                <table class="table table-hover table stripped table-bordered">
-                                    <tr>
-                                        <th>Author name</th>
-                                        <th>Message</th>
-                                        <th>Date</th>
-                                    </tr>
-                                    @foreach($messagesOutgoing as $mo)
+                            <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
+                                <h3 class="center-text">Outgoing messages</h3>
+                                <table border="1px" class="table table-hover table stripped" style="margin-top: 13px;">
+                                    <thead>
                                         <tr>
-                                            <td>{{$mo->login}}</td>
-                                            <td style="overflow: hidden;">{{$mo->text}}</td>
-                                            <td>{{$mo->message_date}}</td>
+                                            <th>Login</th>
+                                            <th>Action</th>
                                         </tr>
-                                        You sent a letter to <i>{{$mo->login}}</i>: <b> {{$mo->text}}</b><br>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($mesListOut as $mlo)
+                                        <tr>
+                                            <td>{{$mlo->login}}</td>
+                                            <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="editModalWindowOut({{$logineduser->id}}, {{$mlo->target_id}}, 'to {{$mlo->login}}', {{$logineduser->id}})">Message list</span></td>
+                                        </tr>
                                     @endforeach
+                                    </tbody>
                                 </table>
                             </div>
-                            <br>
-                            <h3>Incoming messages</h3>
-                            <div class="table-responsive">
-                                <table class="table table-hover table stripped table-bordered">
+                            <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
+                                <h3 class="center-text">Incoming messages</h3>
+                                <table class="table table-hover table stripped">
+                                    <thead>
                                     <tr>
-                                        <th>Author name</th>
-                                        <th>Message</th>
-                                        <th>Date</th>
+                                        <th>Login</th>
+                                        <th>Action</th>
                                     </tr>
-                                    @foreach($messagesIncoming as $mi)
+                                    </thead>
+                                    <tbody>
+                                    @foreach($mesListIn as $mli)
                                         <tr>
-                                            <td>{{$mi->login}}</td>
-                                            <td style="overflow: hidden;">{{$mi->text}}</td>
-                                            <td>{{$mi->message_date}}</td>
+                                            <td>{{$mli->login}}</td>
+                                            <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="editModalWindowOut({{$logineduser->id}}, {{$mli->author_id}}, 'from {{$mli->login}}', {{$logineduser->id}})">Message list</span></td>
                                         </tr>
-                                        You recieved a letter from <i>{{$mi->login}}</i>: <b> {{$mi->text}}</b><br>
                                     @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
+                                <h3 class="center-text">Choose user and write message</h3>
+                                <table class="table table-hover table stripped">
+                                    <tr>
+                                        <td><select id="selectNewUser" name="selectNewUser">
+                                                @foreach($users as $u)
+                                                    <option value="{{$u->id}}">{{$u->login}}</option>
+                                                @endforeach
+                                            </select></td>
+                                        <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="prepareDataToWriteMessage({{$logineduser->id}})">Write new message</span></td>
+                                    </tr>
+
                                 </table>
                             </div>
                     </div>
+                    <div id="main">
+                        <div class="accord_body">
+                            <div class="accord_header">
+                                <h2>List of ALL messages (for debug)</h2>
+                            </div>
+                            <div class="accord_content">
+                                @foreach($messages as $message)
+                                    The author <i>{{$message->author->login}}</i> wrotes to user <i>{{$message->recipient->login}}</i> message: <b> {{$message->text}}</b><br>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalID" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content" style="height: 90vh;">
+                <div class="modal-header" style="height: 10vh;">
+                    <h4 class="modal-title">Messages <span id="loginSpan"></span></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" style="height: 60vh; overflow: auto;" id="msgList">
+                </div>
+                <div class="modal-footer" style="height: 30vh;">
+                    <textarea cols="2" class="form-control" id="textToSend" placeholder="Type message here..."></textarea>
+                    <button class="glyphicon glyphicon-remove" data-dismiss="modal" title="Close dialog"></button>
+                    <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages()"></button>
+                    <button class="glyphicon glyphicon-plus" title="Send message" onclick="sendNewMessage()"></button>
                 </div>
             </div>
         </div>

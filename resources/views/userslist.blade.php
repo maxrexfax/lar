@@ -66,7 +66,7 @@
                                         @endif
                                     </td>
                                     <td>@if($user->id!=Auth::user()->id)
-                                        <a href="{{route('messages.create', ['target_id' => $user->id, 'author_id' =>  Auth::user()->id])}}" target="_blank" title="Write a message to this user"><span class="glyphicon glyphicon-envelope"></span></a>
+                                        <a href="{{route('messages')}}" target="_blank" title="Write message"><span class="glyphicon glyphicon-envelope"></span></a>
                                         @endif
                                         <a href="{{route('userslist.show', ['id' => $user->id])}}" title="View"><span class="glyphicon glyphicon-eye-open"></span></a>
                                         <a href="{{route('userslist.edit', ['id' => $user->id])}}" title="Update"><span class="glyphicon glyphicon-pencil"></span></a>
