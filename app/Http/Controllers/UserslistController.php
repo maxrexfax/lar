@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\City;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
@@ -13,6 +14,7 @@ use DB;
 use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserslistController extends Controller
 {
     public function __construct()
@@ -23,6 +25,14 @@ class UserslistController extends Controller
     public function index()
     {
         return $this->showAllUsers();
+    }
+
+    public function createform()
+    {
+        $cities = City::all();
+        return view('users.create', [
+            'cities' => $cities
+        ]);
     }
 
     public function create(Request $request)
@@ -44,46 +54,33 @@ class UserslistController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
+        User::create([
+            'login'      =>         $request->get('login'),
+            'password'  =>          Hash::make( $request->get('password')),
+            'first_name'     =>     $request->get('first_name'),
+            'middle_name'     =>    $request->get('middle_name'),
+            'last_name'     =>      $request->get('last_name'),
+            'birthday'     =>       $request->get('birthday'),
+            'email'     =>          $request->get('email'),
+            'email_verified_at' =>  Carbon::now(),
+            'phone_number'     =>   $request->get('phone_number'),
+            'city_id'     =>        intval($request->get('city_id')),
+            'is_eaten'     =>       intval($request->get('is_eaten')),
+            'last_logined_date' =>  Carbon::now()
+        ]);
+        $message = 'New user saved!';
         $cities = City::all();
-        $input = $request->input();
-        $message = "";
-        try {
-            $user = User::create([
-                'login'      => $input['login'],
-                'password'  => Hash::make($input['password']),
-                'first_name'     => $input['first_name'],
-                'middle_name'     => $input['middle_name'],
-                'last_name'     => $input['last_name'],
-                'birthday'     => $input['birthday'],
-                'email'     => $input['email'],
-                'phone_number'     => $input['phone_number'],
-                'city_id'     => intval($input['city_id']),
-                'is_eaten'     => intval($input['is_eaten']),
-                'last_logined_date' => Carbon::now()
-            ]);
-        } catch (\Exception $e) {
-            $user =  null;
-            $message = $e->getMessage();
-            $messageStatus = 'errorStatus';
-        }
-
-        if($user) {
-            $message = 'New user saved!';
-            $messageStatus = "successStatus";
-        }
-        return view('usercreate', [
+        return view('users.create', [
             'cities' => $cities,
-        ])->with(['message' => $message, 'messageStatus' => $messageStatus]);
+        ])->with(['message' => $message]);
     }
 
     public function show(Request $request)
     {
         $cities = City::all();
-        $input = $request->input();
-        $id = $input['id'];
-        $user = User::where('id', $id)->first();
-        return view('userview', [
+        $id = $request->get('id');
+        $user = User::findOrFail($id);
+        return view('users.view', [
             'cities' => $cities,
             'user' => $user
         ]);
@@ -91,109 +88,71 @@ class UserslistController extends Controller
 
     public function edit(Request $request)
     {
-        $input = $request->input();
-        $id = $input['id'];
+        $id = $request->get('id');
         $cities = City::all();
-        $user = User::where('id', $id)->first();
-        return view('useredit', [
+        $user = User::findOrFail($id);
+        //$user = User::where('id', $id)->first();
+        return view('users.edit', [
             'cities' => $cities,
             'user' => $user
         ]);
     }
 
-    public function editsave(Request $request)
+    public function save(Request $request)
     {
-        $input = $request->input();
         Validator::make($request->all(), [
-            'login' => ['required', 'max:255', Rule::unique('users')->ignore($input['hiddenid'], 'id')],
+            'login' => ['required', 'max:255', Rule::unique('users')->ignore($request->get('hiddenid'), 'id')],
             'password' => ['max:255'],
             'first_name' => ['required', 'max:255'],
             'middle_name' => ['required', 'max:255'],
             'last_name' => ['required', 'max:255'],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($input['hiddenid'], 'id')],
+            'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($request->get('hiddenid'), 'id')],
             'phone_number' => ['max:20'],
             'city_id' => ['required'],
             'is_eaten' => ['required'],
         ])->validate();
 
-        $input = $request->input();
+        $user = User::where('id', $request->get('hiddenid'))->first();
 
-        $user = User::where('id', $input['hiddenid'])->first();
-        if(isset( $input['login']))
-        {
-            $user->login = $input['login'];
-        }
+        $user->login = $request->get('login');
+        $user->first_name = $request->get('first_name');
+        $user->middle_name = $request->get('middle_name');
+        $user->last_name = $request->get('last_name');
+        $user->birthday = $request->get('birthday');
+        $user->email = $request->get('email');
+        $user->phone_number = $request->get('phone_number');
+        $user->city_id = $request->get('city_id');
+        $user->is_eaten = $request->get('is_eaten');
+
+        $input = $request->input();
         if(isset( $input['password']))
         {
-            $user->password = Hash::make($input['password']);
+            $user->password = Hash::make($request->get('password'));
         }
-        if(isset( $input['first_name']))
-        {
-            $user->first_name = $input['first_name'];
-        }
-        if(isset( $input['middle_name']))
-        {
-            $user->middle_name = $input['middle_name'];
-        }
-        if(isset( $input['last_name']))
-        {
-            $user->last_name = $input['last_name'];
-        }
-        if(isset( $input['birthday']))
-        {
-            $user->birthday = $input['birthday'];
-        }
-        if(isset( $input['email']))
-        {
-            $user->email = $input['email'];
-        }
-        if(isset( $input['phone_number']))
-        {
-            $user->phone_number = $input['phone_number'];
-        }
-        if(isset( $input['city_id']))
-        {
-            $user->city_id = $input['city_id'];
-        }
-        if(isset( $input['is_eaten']))
-        {
-            $user->is_eaten = $input['is_eaten'];
-        }
+//вариант на будущее $user = User::find($id); $user->fill($request->all())->save();
         $user->save();
         return $this->showAllUsers();
     }
 
-    public function showAllUsers()
-    {
-        $cities = City::all();
-        $users= User::orderBy('last_logined_date','desc')->get();
-        return view('userslist', [
-            'users' => $users,
-            'cities' => $cities
-        ]);
-    }
 
     public function destroy(Request $request)
     {
-        $input = $request->input();
-        $id = $input['id'];
+        $id = $request->get('id');
         $user = User::find($id);
         $user->delete();
         return $this->showAllUsers();
     }
 
-
-    public function command(Request $request)
+//if incomes $input['markid']) - selected user markes as infected
+//if incomes $input['unmarkid']) - selected user markes as healthy
+    public function changeHealthStatus(Request $request)
     {
-        $input = $request->input();
-        if(isset($input['markid']))
-        {
-            $user = User::findOrFail($input['markid']);
+        if ($request->get('markid')) {
+            $user = User::findOrFail($request->get('markid'));
             $user->is_eaten = 1;
         }
-        if(isset($input['unmarkid']))
-        {
-            $user = User::findOrFail($input['unmarkid']);
+        if ($request->get('unmarkid')) {
+            $user = User::findOrFail($request->get('unmarkid'));
             $user->is_eaten = 0;
         }
         $user->save();
@@ -203,45 +162,46 @@ class UserslistController extends Controller
     public function filteruserslist(Request $request)
     {
         $message = 'Attention! Users list filtering enabled! Click on "Reset filter" button to see all users!';
-        $messageStatus = "infoStatus";
-        $users = User::all();
         $cities = City::all();
         $input = $request->input();
-        if(isset($input['citiessearch']) && $input['citiessearch']!=0)
+        if(!empty($request->get('citiessearch')))
         {
-            $users = User::where('city_id', $input['citiessearch'])->orderBy('last_logined_date','desc')->get();
-            return view('userslist', [
+            $users = User::where('city_id', $request->get('citiessearch'))->orderBy('last_logined_date','desc')->get();
+            return view('users.list', [
                 'cities' => $cities,
                 'users' => $users,
-            ])->with(['message' => $message, 'messageStatus' => $messageStatus]);
+            ])->with(['message' => $message]);
         }
-        elseif (isset($input['namesearch']))
+        elseif ($request->get('namesearch'))
         {
-            $users = User::where('first_name', $input['namesearch'])->orderBy('last_logined_date','desc')->get();
+            $users = User::where('first_name', $request->get('namesearch'))->orderBy('last_logined_date','desc')->get();
         }
-        elseif (isset($input['loginsearch']))
+        elseif ($request->get('loginsearch') )
         {
-            $users = User::where('login', $input['loginsearch'])->orderBy('last_logined_date','desc')->get();
+            $users = User::where('login', $request->get('loginsearch'))->orderBy('last_logined_date','desc')->get();
         }
-        elseif (isset($input['emailsearch']))
+        elseif ($request->get('emailsearch'))
         {
-            $users = User::where('email', $input['emailsearch'])->orderBy('last_logined_date','desc')->get();
+            $users = User::where('email', $request->get('emailsearch'))->orderBy('last_logined_date','desc')->get();
         }
         else
-            {
-                $users= User::orderBy('last_logined_date','desc')->get();
-            }
-        return view('userslist', [
+        {
+            $users= User::orderBy('last_logined_date','desc')->get();
+        }
+        return view('users.list', [
             'cities' => $cities,
             'users' => $users,
-        ])->with(['message' => $message, 'messageStatus' => $messageStatus]);
+        ])->with(['message' => $message]);
     }
 
-    public function createnewuser()
+    private function showAllUsers()
     {
         $cities = City::all();
-        return view('usercreate', [
+        $users = User::orderBy('last_logined_date','desc')->get();
+        return view('users.list', [
+            'users' => $users,
             'cities' => $cities
         ]);
     }
+
 }

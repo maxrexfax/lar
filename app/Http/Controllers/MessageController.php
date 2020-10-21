@@ -55,34 +55,26 @@ class MessageController extends Controller
             ->where('messages.target_id', '=', $user['id'])
             ->get();
 
-        return view('messagelist', [
-            'messages' => $messages,
-            'messagesOutgoing' => $messagesOutgoing,
-            'messagesIncoming' => $messagesIncoming,
-            'cities' => $cities,
-            'users' => $users,
-            'logineduser' => $user,
-            'mesListOut' => $mesListOut,
-            'mesListIn' => $mesListIn,
+        return view('messages.list', [
+            'messages'          =>      $messages,
+            'messagesOutgoing'  =>      $messagesOutgoing,
+            'messagesIncoming'  =>      $messagesIncoming,
+            'cities'            =>      $cities,
+            'users'             =>      $users,
+            'logineduser'       =>      $user,
+            'mesListOut'        =>      $mesListOut,
+            'mesListIn'         =>      $mesListIn,
         ]);
     }
 
     public function create(Request $request)
     {
-        $target_id = $request->get('target_id');
-        $author_id = $request->get('author_id');
-        $text = $request->get('text');
-        $message = Message::create([
+        Message::create([
             'target_id'      => $request->get('target_id'),
             'author_id'      => $request->get('author_id'),
-            'text'      => $request->get('text'),
-            'message_date' => Carbon::now()
+            'text'           => $request->get('text'),
+            'message_date'   => Carbon::now()
         ]);
-    }
-
-    public function store(Request $request)
-    {
-        //
     }
 
     public function show(Request $request)
@@ -100,8 +92,8 @@ class MessageController extends Controller
             ->addSelect('users.login')
             ->orderBy('messages.message_date', 'asc')
             ->get();
-        //var_dump($correspondenseList);
-        echo json_encode($correspondenseList);
+
+        return response()->json($correspondenseList);
     }
 
     public function edit($id)

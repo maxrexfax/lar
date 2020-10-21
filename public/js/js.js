@@ -3,37 +3,33 @@ var obj;
 window.onload = function (){
     obj = {
         markUserObj : function(id) {
-            if(confirm("Really?"))
-            {
+            if(confirm("Really?")) {
                 let xhttp;
                 xhttp = new XMLHttpRequest();
-                let urlcommand = this.getClearUrl()+ '/command' + "?markid="+id;
-                //console.log("urlcommand=" + urlcommand);
+                let urlcommand = this.getClearUrl()+ '/changeHealthStatus' + "?markid="+id;
                 xhttp.open("GET", urlcommand, true);
                 xhttp.send();
                 setTimeout(this.reloadPage, 1000);
             }
         },
 
-        unMarkUserObj : function(id){
+        unMarkUserObj : function(id) {
             if(confirm("Really?")) {
                 let xhttp;
                 xhttp = new XMLHttpRequest();
-                let urlcommand = this.getClearUrl() + '/command' + "?unmarkid=" + id;
-                //console.log("urlcommand=" + urlcommand);
+                let urlcommand = this.getClearUrl() + '/changeHealthStatus' + "?unmarkid=" + id;
                 xhttp.open("GET", urlcommand, true);
                 xhttp.send();
                 setTimeout(this.reloadPage, 500);
             }
         },
 
-        getClearUrl : function(){
+        getClearUrl : function() {
             let url = window.location.href;
-            if(url.indexOf("?")==-1){
+            if(url.indexOf("?")==-1) {
                 return url;
-            }
-            else {
-                if((url.indexOf("/filter")==-1)){
+            } else {
+                if((url.indexOf("/filter")==-1)) {
                     url = url.slice(0, url.indexOf("?"));
                 }else{
                     url = url.slice(0, url.indexOf("/filter"));
@@ -42,22 +38,21 @@ window.onload = function (){
             }
         },
 
-        reloadPage : function(){
+        reloadPage : function() {
             window.location.reload();
         },
 
-        editModalWindowOutObj : function(author_id, target_id, login, logined_user_id){
+        editModalWindowOutObj : function(author_id, target_id, login, logined_user_id) {
             let spanForLogin = document.getElementById("loginSpan");
             spanForLogin.innerText = login;
             this.getAllMessages(author_id, target_id);
         },
 
-        getAllMessages : function (author_id, target_id){
+        getAllMessages : function (author_id, target_id) {
             let xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     let res = this.responseText;
-                    //console.log("this.responseText=" + res);
                     obj.printAllMessagesObj(author_id, target_id, res, author_id);
                 }
             };
@@ -66,17 +61,14 @@ window.onload = function (){
             xhttp.send();
         },
 
-        printAllMessagesObj : function(author_id, target_id, jsonText, logined_user_id){
-            //console.log(jsonText);
+        printAllMessagesObj : function(author_id, target_id, jsonText, logined_user_id) {
             let resArray = JSON.parse(jsonText);
-            //console.log(resArray);
             let resHtml = '';
-            for(let i = 0; i < resArray.length; i ++){
-                //console.log(resArray[i]);
+            for (let i = 0; i < resArray.length; i ++) {
                 resHtml+='<div class="msg_class ';
-                if(resArray[i]['author_id'] == logined_user_id){
+                if (resArray[i]['author_id'] == logined_user_id) {
                     resHtml+='float-right"';
-                }else{
+                } else {
                     resHtml+='float-left"';
                 }
                 resHtml+='>' +
@@ -84,15 +76,13 @@ window.onload = function (){
                             '<p class="msg-text">' + resArray[i]['text'] + '</p>' +
                         '</div>'
             }
-            //console.log(resHtml);
             document.getElementById("msgList").innerHTML = resHtml;
             let textArea = document.getElementById("textToSend");
             textArea.setAttribute("data-target_id", target_id);
             textArea.setAttribute("data-author_id", author_id);
         },
-        sendNewMessageObj : function (){
+        sendNewMessageObj : function () {
             let textArea = document.getElementById("textToSend");
-            //console.log(textArea.dataset.author_id + ' ' + textArea.dataset.target_id + ' ' +  textArea.value);
             let xhttp = new XMLHttpRequest();
             let url = this.getClearUrl() + '/create?target_id=' + textArea.dataset.target_id + "&author_id=" + textArea.dataset.author_id + "&text=" + textArea.value;
             xhttp.open("GET", url, true);
@@ -101,40 +91,37 @@ window.onload = function (){
                 obj.getAllMessages(textArea.dataset.author_id, textArea.dataset.target_id);
             }, 300);
         },
-        reloadMessagesObj : function (){
+        reloadMessagesObj : function () {
             let textArea = document.getElementById("textToSend");
             this.getAllMessages(textArea.dataset.author_id, textArea.dataset.target_id);
         },
-        prepareDataToWriteMessageObj : function (author_id){
+        prepareDataToWriteMessageObj : function (author_id) {
             let selectInput = document.getElementById('selectNewUser');
-            //let target_id = selectInput.value;
-            console.log(selectInput.options[selectInput.selectedIndex].value);
-            console.log(selectInput.options[selectInput.selectedIndex].text);
             this.editModalWindowOutObj(author_id, selectInput.options[selectInput.selectedIndex].value, selectInput.options[selectInput.selectedIndex].text, 0);
         }
     };
 }
-function markUser(id){
+function markUser(id) {
     obj.markUserObj(id);
 }
 
-function unMarkUser(id){
+function unMarkUser(id) {
     obj.unMarkUserObj(id);
 }
 
-function editModalWindowOut(author_id, target_id, login, logined_user_id){
+function editModalWindowOut(author_id, target_id, login, logined_user_id) {
     obj.editModalWindowOutObj(author_id, target_id, login, logined_user_id);
 }
 
-function sendNewMessage(){
+function sendNewMessage() {
     obj.sendNewMessageObj();
 }
 
-function reloadMessages(){
+function reloadMessages() {
     obj.reloadMessagesObj();
 }
 
-function prepareDataToWriteMessage(author_id){
+function prepareDataToWriteMessage(author_id) {
     obj.prepareDataToWriteMessageObj(author_id);
 }
 

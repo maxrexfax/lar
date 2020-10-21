@@ -42,8 +42,10 @@ class LoginController extends Controller
     }
 
     //Every login update date of login on this user to have ability to sort userlist by last logined date
-    public function authenticated(Request $request, $user) {
-        $user->last_logined_date = Carbon::now()->toDateTimeString();
+    public function authenticated(Request $request, $user)
+    {
+        $user->last_logined_date = Carbon::now()
+             ->toDateTimeString();
         $user->save();
     }
 }

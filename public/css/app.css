@@ -12,15 +12,6 @@ html {
 .center-text{
     text-align: center;
 }
-.errorStatus{
-    background-color: #f66d9b;
-}
-.successStatus{
-    background-color: lightgreen;
-}
-.infoStatus{
-    background-color: #a0aec0;
-}
 
 .margin-horizontal-25{
     margin-left: 25px;

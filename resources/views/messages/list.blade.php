@@ -58,7 +58,9 @@
                                     <tr>
                                         <td><select id="selectNewUser" name="selectNewUser">
                                                 @foreach($users as $u)
+                                                    @if($u->id!=$logineduser->id)
                                                     <option value="{{$u->id}}">{{$u->login}}</option>
+                                                    @endif
                                                 @endforeach
                                             </select></td>
                                         <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="prepareDataToWriteMessage({{$logineduser->id}})">Write new message</span></td>

@@ -76,11 +76,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        <div class="center-text
-                            @if(isset($messageStatus))
-                        {{$messageStatus}}
-                        @endif
-                            ">
+                        <div class="center-text">
                             @if(isset($message))
                                 {{$message}}
                             @endif

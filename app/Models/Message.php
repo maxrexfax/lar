@@ -20,22 +20,23 @@ class Message extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'author_id');
     }
+
     public function getAuthorLogin()
     {
-        if($this->author->login!=null)
-        {
+        if (!$this->author->login) {
             return $this->author->login;
         }
         return 0;
     }
+
     public function recipient()
     {
         return $this->hasOne('App\Models\User', 'id', 'target_id');
     }
+
     public function getRecipientLogin()
     {
-        if($this->recipient->login!=null)
-        {
+        if (!$this->recipient->login) {
             return $this->recipient->login;
         }
         return 0;

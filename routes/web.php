@@ -23,21 +23,21 @@ Route::get('/home', [HomeController::class, 'index'])->name('home.show.rout');
 
 Route::get('/userslist', [UserslistController::class, 'index'])->name('userslist');
 
-Route::get('/userslist/command', [UserslistController::class, 'command'])->name('userslist.command');
+Route::get('/userslist/changeHealthStatus', [UserslistController::class, 'changeHealthStatus'])->name('userslist.changeHealthStatus');
 
 Route::get('/userslist/show', [UserslistController::class, 'show'])->name('userslist.show');
 
-Route::post('/userslist/create', [UserslistController::class, 'create'])->name('userslist.create');
+Route::match(['get', 'post'],'/userslist/create', [UserslistController::class, 'create'])->name('userslist.create');
 
 Route::match(['get', 'post'],'/userslist/edit', [UserslistController::class, 'edit'])->name('userslist.edit');
 
-Route::post('/userslist/editsave', [UserslistController::class, 'editsave'])->name('userslist.editsave');
+Route::post('/userslist/editsave', [UserslistController::class, 'save'])->name('userslist.save');
 
 Route::get('/userslist/destroy', [UserslistController::class, 'destroy'])->name('userslist.destroy');
 
 Route::get('/userslist/filter', [UserslistController::class, 'filteruserslist'])->name('userslist.filter');
 
-Route::get('/usercreate', [UserslistController::class, 'createnewuser'])->name('usercreate');
+Route::get('/usercreate', [UserslistController::class, 'createform'])->name('createform');
 
 Route::match(['get'], '/messages', [MessageController::class, 'index'])->name('messages');
 
