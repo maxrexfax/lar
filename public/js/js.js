@@ -1,5 +1,7 @@
 "use strict";
 var obj;
+var numberOfMessages;
+var messagesChecker;
 window.onload = function (){
     obj = {
 
@@ -8,6 +10,7 @@ window.onload = function (){
                 let xhttp;
                 xhttp = new XMLHttpRequest();
                 let urlcommand = this.getClearUrl()+ '/changeHealthStatus' + "?id="+id;
+                console.log('urlcommand=' + urlcommand);
                 xhttp.open("GET", urlcommand, true);
                 xhttp.send();
                 setTimeout(this.reloadPage, 1000);
@@ -31,13 +34,47 @@ window.onload = function (){
         reloadPage : function() {
             window.location.reload();
         },
-
+//set login to span in modal window and start function getAllMessages
         editModalWindowOutObj : function(author_id, target_id, login, logined_user_id) {
             let spanForLogin = document.getElementById("loginSpan");
             spanForLogin.innerText = login;
+            numberOfMessages = 0;
             this.getAllMessages(author_id, target_id);
+            //this.startTimerChecker(author_id, target_id);
+            messagesChecker = setInterval(function() {
+                obj.startTimerChecker(author_id, target_id);
+            }, 2000);
         },
 
+        startTimerChecker : function (author_id, target_id){
+            let spanNotif = document.getElementById('span_notification');
+            let divModalContainer = document.getElementById("modalID");
+            if(divModalContainer.style.display=='none'){
+                messagesChecker.clearTimeout();
+            }
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let res = this.responseText;
+                    let resArray = JSON.parse(res);
+                    if(resArray.length > numberOfMessages){//incoming message appeared
+                        spanNotif.innerText = "New message at " + obj.printDate();
+                        obj.reloadMessagesObj();
+                    }else{
+                        spanNotif.innerText = resArray.length + " messages at " + obj.printDate();
+                    }
+                }
+            };
+            let url = this.getClearUrl() + '/show?target_id=' + target_id;
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        },
+
+        stopTimerObj : function (){
+            messagesChecker.clearTimeout();
+        },
+
+//get JSON response with all messages
         getAllMessages : function (author_id, target_id) {
             let xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -53,6 +90,7 @@ window.onload = function (){
 
         printAllMessagesObj : function(author_id, target_id, jsonText, logined_user_id) {
             let resArray = JSON.parse(jsonText);
+            numberOfMessages = resArray.length;
             let resHtml = '';
             for (let i = 0; i < resArray.length; i ++) {
                 resHtml+='<div class="msg_class ';
@@ -88,7 +126,18 @@ window.onload = function (){
         prepareDataToWriteMessageObj : function (author_id) {
             let selectInput = document.getElementById('selectNewUser');
             this.editModalWindowOutObj(author_id, selectInput.options[selectInput.selectedIndex].value, selectInput.options[selectInput.selectedIndex].text, 0);
-        }
+        },
+
+        printDate : function(){
+        var currentdate = new Date();
+        var datetime = currentdate.getFullYear() + "."
+            + (currentdate.getMonth()+1)  + "."
+            + currentdate.getDate() + "-"
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
+        return datetime;
+    }
     };
 }
 
@@ -119,6 +168,12 @@ function reloadMessages() {
 function prepareDataToWriteMessage(author_id) {
     obj.prepareDataToWriteMessageObj(author_id);
 }
+
+function stopTimer() {
+    obj.stopTimerObj();
+}
+
+
 
 $(document).ready(function() {
     let blHeader = $('.accord_header');

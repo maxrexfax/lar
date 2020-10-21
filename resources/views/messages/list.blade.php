@@ -93,15 +93,18 @@
             <div class="modal-content" style="height: 90vh;">
                 <div class="modal-header" style="height: 10vh;">
                     <h4 class="modal-title">Messages <span id="loginSpan"></span></h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" onclick="stopTimer()">&times;</button>
                 </div>
                 <div class="modal-body" style="height: 60vh; overflow: auto;" id="msgList">
                 </div>
                 <div class="modal-footer" style="height: 30vh;">
                     <textarea cols="2" class="form-control" id="textToSend" placeholder="Type message here..."></textarea>
-                    <button class="glyphicon glyphicon-remove" data-dismiss="modal" title="Close dialog"></button>
-                    <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages()"></button>
-                    <button class="glyphicon glyphicon-plus" title="Send message" onclick="sendNewMessage()"></button>
+                    <div style="width: 100%">
+                        <span id="span_notification"></span>
+                        <button class="glyphicon glyphicon-remove" data-dismiss="modal" title="Close dialog" onclick="stopTimer()"></button>
+                        <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages()"></button>
+                        <button class="glyphicon glyphicon-plus" title="Send message" onclick="sendNewMessage()"></button>
+                    </div>
                 </div>
             </div>
         </div>
