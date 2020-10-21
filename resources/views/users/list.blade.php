@@ -59,11 +59,13 @@
                                     </td>
                                     <td scope="col">{{$user->city->name}}</td>
                                     <td scope="col">
-                                       @if($user->is_eaten)
-                                            <button type="submit" class="btn btn-secondary btn-block btn-sm" id="{{$user->id}}" onclick="unMarkUser(id)">Unmark?</button>
-                                        @else
-                                            <button type="submit" class="btn btn-danger btn-block btn-sm" id="{{$user->id}}" onclick="markUser(id)">Mark infected</button>
-                                        @endif
+                                        <button type="submit" class="btn btn-secondary btn-block btn-sm" id="{{$user->id}}" onclick="MarkUser(id)">
+                                            @if($user->is_eaten)
+                                            Unmark?
+                                            @else
+                                                <span style="color: red; font-weight: bold;">Mark infected</span>
+                                            @endif
+                                        </button>
                                     </td>
                                     <td>@if($user->id!=Auth::user()->id)
                                         <a href="{{route('messages')}}" target="_blank" title="Write message"><span class="glyphicon glyphicon-envelope"></span></a>

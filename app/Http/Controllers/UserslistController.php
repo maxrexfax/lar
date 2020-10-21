@@ -147,13 +147,9 @@ class UserslistController extends Controller
 //if incomes $input['unmarkid']) - selected user markes as healthy
     public function changeHealthStatus(Request $request)
     {
-        if ($request->get('markid')) {
-            $user = User::findOrFail($request->get('markid'));
-            $user->is_eaten = 1;
-        }
-        if ($request->get('unmarkid')) {
-            $user = User::findOrFail($request->get('unmarkid'));
-            $user->is_eaten = 0;
+        if ($request->get('id')) {
+            $user = User::findOrFail($request->get('id'));
+            $user->is_eaten = !$user->is_eaten;
         }
         $user->save();
         return \Redirect::route('/userslist');

@@ -2,25 +2,15 @@
 var obj;
 window.onload = function (){
     obj = {
-        markUserObj : function(id) {
+
+        MarkUserObj : function(id) {
             if(confirm("Really?")) {
                 let xhttp;
                 xhttp = new XMLHttpRequest();
-                let urlcommand = this.getClearUrl()+ '/changeHealthStatus' + "?markid="+id;
+                let urlcommand = this.getClearUrl()+ '/changeHealthStatus' + "?id="+id;
                 xhttp.open("GET", urlcommand, true);
                 xhttp.send();
                 setTimeout(this.reloadPage, 1000);
-            }
-        },
-
-        unMarkUserObj : function(id) {
-            if(confirm("Really?")) {
-                let xhttp;
-                xhttp = new XMLHttpRequest();
-                let urlcommand = this.getClearUrl() + '/changeHealthStatus' + "?unmarkid=" + id;
-                xhttp.open("GET", urlcommand, true);
-                xhttp.send();
-                setTimeout(this.reloadPage, 500);
             }
         },
 
@@ -101,6 +91,11 @@ window.onload = function (){
         }
     };
 }
+
+function MarkUser(id) {
+    obj.MarkUserObj(id);
+}
+
 function markUser(id) {
     obj.markUserObj(id);
 }
