@@ -15,16 +15,19 @@ use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Hash;
 
 
+
 class UserslistController extends Controller
 {
+    private $paginQuantity;
     public function __construct()
     {
         $this->middleware('auth');
+        $this->paginQuantity = 15;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return $this->showAllUsers();
+        return $this->showAllUsers($request);
     }
 
     public function createform()
@@ -157,28 +160,32 @@ class UserslistController extends Controller
 
     public function filteruserslist(Request $request)
     {
+        if ($request->get('paginQuant')) {
+            $this->paginQuantity = $request->get('paginQuant');
+        }
         $message = 'Attention! Users list filtering enabled! Click on "Reset filter" button to see all users!';
         $cities = City::all();
         $input = $request->input();
         if(!empty($request->get('citiessearch')))
         {
-            $users = User::where('city_id', $request->get('citiessearch'))->orderBy('last_logined_date','desc')->get();
+            $users = User::where('city_id', $request->get('citiessearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
             return view('users.list', [
                 'cities' => $cities,
                 'users' => $users,
+                'quantity' => $this->paginQuantity,
             ])->with(['message' => $message]);
         }
         elseif ($request->get('namesearch'))
         {
-            $users = User::where('first_name', $request->get('namesearch'))->orderBy('last_logined_date','desc')->get();
+            $users = User::where('first_name', $request->get('namesearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
         }
         elseif ($request->get('loginsearch') )
         {
-            $users = User::where('login', $request->get('loginsearch'))->orderBy('last_logined_date','desc')->get();
+            $users = User::where('login', $request->get('loginsearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
         }
         elseif ($request->get('emailsearch'))
         {
-            $users = User::where('email', $request->get('emailsearch'))->orderBy('last_logined_date','desc')->get();
+            $users = User::where('email', $request->get('emailsearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
         }
         else
         {
@@ -187,16 +194,22 @@ class UserslistController extends Controller
         return view('users.list', [
             'cities' => $cities,
             'users' => $users,
+            'quantity' => $this->paginQuantity,
         ])->with(['message' => $message]);
     }
 
-    private function showAllUsers()
+    private function showAllUsers(Request $request)
     {
+        if ($request->get('paginQuant')) {
+            $this->paginQuantity = $request->get('paginQuant');
+        }
+        $users = User::orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
         $cities = City::all();
-        $users = User::orderBy('last_logined_date','desc')->get();
+        //$users = User::orderBy('last_logined_date','desc')->get();
         return view('users.list', [
             'users' => $users,
-            'cities' => $cities
+            'cities' => $cities,
+            'quantity' => $this->paginQuantity,
         ]);
     }
 

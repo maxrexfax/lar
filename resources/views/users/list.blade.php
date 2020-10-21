@@ -5,7 +5,15 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">{{ __('Dashboard') }}</div>
+                    <div class="card-header center-text">
+                            {{ __('List of all users') }}
+                    </div>
+                            <form method="GET" action="{{route('userslist')}}" style="margin: 5px 0;">
+                                <div class="flex-class width-300 margin-els float-right">
+                                <input value="{{$quantity}}" type="number" name="paginQuant" id="paginQuant" class="margin-els" size="5" placeholder="15">
+                                <button type="submit" class="btn btn-primary btn-block margin-els">Users on the page</button>
+                                </div>
+                            </form>
                     <br>
                     <div class="card-body">
                         @if (session('status'))
@@ -14,7 +22,7 @@
                             </div>
                             {{ __('List of users:') }}
                         @endif
-                    <div class="table-responsive">
+                    <div class="for-div-table">
                         <form method="GET" action="{{route('userslist.filter')}}" style="margin-bottom: 5px;">
                         <div style="display: flex;">
                             <a href="{{route('userslist')}}" class="btn btn-primary btn-block">Reset filter</a>
@@ -78,6 +86,9 @@
                             @endforeach
                             </tbody>
                         </table>
+                        <div class="center-text">
+                        {{$users->appends(['paginQuant' => $quantity])->render()}}
+                        </div>
                         <div class="center-text">
                             @if(isset($message))
                                 {{$message}}

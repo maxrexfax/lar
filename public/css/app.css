@@ -44,6 +44,20 @@ table, th, td {
 #span_notification{
     float: left;
 }
+
+.for-div-table{
+    display: block;
+    width: 100%;
+}
+
+.flex-class{
+    display: flex;
+}
+
+.width-300{
+    width: 300px;
+}
+
 /*Accordion START*/
 #main {
     max-width: 1000px;
