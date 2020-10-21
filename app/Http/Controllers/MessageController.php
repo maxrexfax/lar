@@ -22,20 +22,8 @@ class MessageController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $cities = City::all();
         $users = User::all();
-        $messages = Message::all();
-
-        $messagesOutgoing = DB::table('messages')
-            ->leftJoin('users', 'messages.target_id', '=', 'users.id')
-            ->where('messages.author_id', '=', $user['id'])
-            ->get();
-
-        $messagesIncoming = DB::table('messages')
-            ->leftJoin('users', 'messages.author_id', '=', 'users.id')
-            ->where('messages.target_id', '=', $user['id'])
-            ->get();
-
+        $messages = Message::all();//debug - for control
 
         $mesListOut = DB::table('messages')
             ->leftJoin('users', 'messages.target_id', '=', 'users.id')
@@ -56,24 +44,21 @@ class MessageController extends Controller
             ->get();
 
         return view('messages.list', [
-            'messages'          =>      $messages,
-            'messagesOutgoing'  =>      $messagesOutgoing,
-            'messagesIncoming'  =>      $messagesIncoming,
-            'cities'            =>      $cities,
-            'users'             =>      $users,
-            'logineduser'       =>      $user,
-            'mesListOut'        =>      $mesListOut,
-            'mesListIn'         =>      $mesListIn,
+            'messages' => $messages,
+            'users' => $users,
+            'logineduser' => $user,
+            'mesListOut' => $mesListOut,
+            'mesListIn' => $mesListIn,
         ]);
     }
 
     public function create(Request $request)
     {
         Message::create([
-            'target_id'      => $request->get('target_id'),
-            'author_id'      => $request->get('author_id'),
-            'text'           => $request->get('text'),
-            'message_date'   => Carbon::now()
+            'target_id' => $request->get('target_id'),
+            'author_id' => $request->get('author_id'),
+            'text' => $request->get('text'),
+            'message_date' => Carbon::now()
         ]);
     }
 
@@ -96,18 +81,4 @@ class MessageController extends Controller
         return response()->json($correspondenseList);
     }
 
-    public function edit($id)
-    {
-        //
-    }
-
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    public function destroy($id)
-    {
-        //
-    }
 }

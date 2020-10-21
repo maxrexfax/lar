@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserEditRequest;
 use App\Models\City;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
@@ -38,38 +39,21 @@ class UserslistController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    public function create(UserRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'login' => ['required', 'unique:users', 'max:255'],
-            'password' => ['required', 'max:255'],
-            'first_name' => ['required', 'max:255'],
-            'middle_name' => ['required', 'max:255'],
-            'last_name' => ['required', 'max:255'],
-            'email' => ['required', 'unique:users', 'max:255', 'email'],
-            'phone_number' => ['max:20'],
-            'city_id' => ['required'],
-            'is_eaten' => ['required'],
-        ]);
-
-        if ($validator->fails()) {
-            return redirect('usercreate')
-                ->withErrors($validator)
-                ->withInput();
-        }
         User::create([
-            'login'      =>         $request->get('login'),
-            'password'  =>          Hash::make( $request->get('password')),
-            'first_name'     =>     $request->get('first_name'),
-            'middle_name'     =>    $request->get('middle_name'),
-            'last_name'     =>      $request->get('last_name'),
-            'birthday'     =>       $request->get('birthday'),
-            'email'     =>          $request->get('email'),
+            'login' => $request->get('login'),
+            'password' => Hash::make( $request->get('password')),
+            'first_name' => $request->get('first_name'),
+            'middle_name' => $request->get('middle_name'),
+            'last_name' => $request->get('last_name'),
+            'birthday' => $request->get('birthday'),
+            'email' => $request->get('email'),
             'email_verified_at' =>  Carbon::now(),
-            'phone_number'     =>   $request->get('phone_number'),
-            'city_id'     =>        intval($request->get('city_id')),
-            'is_eaten'     =>       intval($request->get('is_eaten')),
-            'last_logined_date' =>  Carbon::now()
+            'phone_number' => $request->get('phone_number'),
+            'city_id' => intval($request->get('city_id')),
+            'is_eaten' => intval($request->get('is_eaten')),
+            'last_logined_date' => Carbon::now()
         ]);
         $message = 'New user saved!';
         $cities = City::all();
@@ -101,22 +85,14 @@ class UserslistController extends Controller
         ]);
     }
 
-    public function save(Request $request)
+    public function save(UserEditRequest $request)
     {
         Validator::make($request->all(), [
             'login' => ['required', 'max:255', Rule::unique('users')->ignore($request->get('hiddenid'), 'id')],
-            'password' => ['max:255'],
-            'first_name' => ['required', 'max:255'],
-            'middle_name' => ['required', 'max:255'],
-            'last_name' => ['required', 'max:255'],
             'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($request->get('hiddenid'), 'id')],
-            'phone_number' => ['max:20'],
-            'city_id' => ['required'],
-            'is_eaten' => ['required'],
         ])->validate();
 
         $user = User::where('id', $request->get('hiddenid'))->first();
-
         $user->login = $request->get('login');
         $user->first_name = $request->get('first_name');
         $user->middle_name = $request->get('middle_name');
@@ -134,7 +110,7 @@ class UserslistController extends Controller
         }
 //вариант на будущее $user = User::find($id); $user->fill($request->all())->save();
         $user->save();
-        return $this->showAllUsers();
+        return $this->showAllUsers($request);
     }
 
 
@@ -143,11 +119,10 @@ class UserslistController extends Controller
         $id = $request->get('id');
         $user = User::find($id);
         $user->delete();
-        return $this->showAllUsers();
+        return $this->showAllUsers($request);
     }
 
 //if incomes $input['markid']) - selected user markes as infected
-//if incomes $input['unmarkid']) - selected user markes as healthy
     public function changeHealthStatus(Request $request)
     {
         if ($request->get('id')) {
@@ -205,7 +180,6 @@ class UserslistController extends Controller
         }
         $users = User::orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
         $cities = City::all();
-        //$users = User::orderBy('last_logined_date','desc')->get();
         return view('users.list', [
             'users' => $users,
             'cities' => $cities,

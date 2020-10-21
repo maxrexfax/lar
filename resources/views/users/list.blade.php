@@ -80,7 +80,9 @@
                                         @endif
                                         <a href="{{route('userslist.show', ['id' => $user->id])}}" title="View"><span class="glyphicon glyphicon-eye-open"></span></a>
                                         <a href="{{route('userslist.edit', ['id' => $user->id])}}" title="Update"><span class="glyphicon glyphicon-pencil"></span></a>
+                                        @if($user->id!=Auth::user()->id)
                                         <a href="{{route('userslist.destroy', ['id' => $user->id])}}" title="Delete" onclick="confirm('Really delete?')"><span class="glyphicon glyphicon-trash"></span></a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
