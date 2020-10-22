@@ -137,7 +137,67 @@ window.onload = function (){
             + currentdate.getMinutes() + ":"
             + currentdate.getSeconds();
         return datetime;
-    }
+        },
+        /*Javascript for map of cities*/
+        getAllCitiesObj : function() {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let res = this.responseText;
+                    let resArray = JSON.parse(res);
+                    obj.loadMap(resArray);
+                }
+            };
+            let url = this.getClearUrl() + 'list';
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        },
+
+        loadMap : function (locations) {
+            let count;
+            var center = {lat: 47.871633, lng: 35.053650};
+            var mapOptions = {
+                mapTypeId: 'roadmap',
+                zoom: 5,
+                center: center
+            };
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            var contentString = [];
+            let markers = [];
+            var infowindow = [];
+            for (count = 0; count < locations.length; count++) {
+                markers[count] = [locations[count]['name'], locations[count]['lat'], locations[count]['lon'], locations[count]['description']];
+                contentString[count] = '<div class="info_content">' +
+                '<h3><a href="'+ this.getUrlForMap() +'filter?citiessearch=' + locations[count]['id'] +'" target="_blank" >' +
+                locations[count]['name'] +
+                '</a></h3>' +
+                '<p>' +
+                locations[count]['description'] +
+                '</p></div>';
+                infowindow[count] = new google.maps.InfoWindow({
+                    content: contentString[count],
+                    maxWidth: 400
+                }, markers[count]);
+            }
+
+            // Display multiple markers on a map
+            for(let i = 0; i < markers.length; i++ ) {
+                var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+                markers[i] = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: markers[i][0],
+                });
+                markers[i].addListener("click", ()=>infowindow[i].open(map, markers[i]))
+            }
+
+        },
+
+        getUrlForMap : function () {
+            let url = window.location.href;
+            url = url.slice(0, url.indexOf("map"));
+            return url;
+        }
     };
 }
 
@@ -173,7 +233,9 @@ function stopTimer() {
     obj.stopTimerObj();
 }
 
-
+function getAllCities() {
+    obj.getAllCitiesObj();
+}
 
 $(document).ready(function() {
     let blHeader = $('.accord_header');

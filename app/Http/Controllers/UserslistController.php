@@ -103,8 +103,7 @@ class UserslistController extends Controller
         $user->city_id = $request->get('city_id');
         $user->is_eaten = $request->get('is_eaten');
 
-        $input = $request->input();
-        if(isset( $input['password']))
+        if($request->get('password'))
         {
             $user->password = Hash::make($request->get('password'));
         }
@@ -171,6 +170,33 @@ class UserslistController extends Controller
             'users' => $users,
             'quantity' => $this->paginQuantity,
         ])->with(['message' => $message]);
+    }
+
+    public function map(Request $request)
+    {
+        $cities = City::all();
+        $users= User::orderBy('last_logined_date','desc')->get();
+        $message = "Test message";
+        return view('users.map', [
+            'cities' => $cities,
+            'users' => $users,
+            'quantity' => $this->paginQuantity,
+        ])->with(['message' => $message]);
+    }
+
+    public function maplist()
+    {
+        $citieslist = DB::table('cities')
+            ->select('cities.id')
+            ->addSelect('cities.name')
+            ->addSelect('cities.description')
+            ->addSelect('cities.lat')
+            ->addSelect('cities.lon')
+            ->orderBy('cities.id', 'asc')
+            ->get();
+
+        return response()->json($citieslist);
+
     }
 
     private function showAllUsers(Request $request)

@@ -22,6 +22,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuuEunVyGucPGOXANU2-zrrmrh85WlyEQ"></script>
+    <!--<script src='http://maps.googleapis.com/maps/api/js?sensor=false' type='text/javascript'></script>-->
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -49,6 +51,9 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item active">
                             <a class="nav-link" href="{{route('userslist')}}">List of users</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{route('userslist')}}/map">List of cities</a>
                         </li>
                         <li class="nav-item active">
                             <a class="nav-link" href="{{route('createform')}}">Create new user</a>

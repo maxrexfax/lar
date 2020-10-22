@@ -37,6 +37,10 @@ Route::get('/userslist/destroy', [UserslistController::class, 'destroy'])->name(
 
 Route::get('/userslist/filter', [UserslistController::class, 'filteruserslist'])->name('userslist.filter');
 
+Route::get('/userslist/map', [UserslistController::class, 'map'])->name('userslist.map');
+
+Route::get('/userslist/maplist', [UserslistController::class, 'maplist'])->name('userslist.maplist');
+
 Route::get('/usercreate', [UserslistController::class, 'createform'])->name('createform');
 
 Route::match(['get'], '/messages', [MessageController::class, 'index'])->name('messages');

@@ -10,6 +10,9 @@ class City extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'description',
+        'lat',
+        'lon',
     ];
 
 }
