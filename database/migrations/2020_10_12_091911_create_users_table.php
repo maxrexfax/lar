@@ -27,6 +27,8 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('city_id')->nullable();
             $table->boolean('is_eaten')->nullable();
             $table->date('last_logined_date')->nullable();
+            $table->string('last_logined_ip')->nullable();
+            $table->string('last_logined_city')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

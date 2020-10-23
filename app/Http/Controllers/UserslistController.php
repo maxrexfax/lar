@@ -20,10 +20,12 @@ use Illuminate\Support\Facades\Hash;
 class UserslistController extends Controller
 {
     private $paginQuantity;
+    private $ipApiKey;
     public function __construct()
     {
         $this->middleware('auth');
         $this->paginQuantity = 15;
+        $this->ipApiKey = '0dc12c558b6916f9dbfe904b5528ad2acdcea75c44d3c14d29c2ad67f1e87bb0';
     }
 
     public function index(Request $request)
@@ -39,7 +41,7 @@ class UserslistController extends Controller
         ]);
     }
 
-    public function create(UserRequest $request)
+    public function store(UserRequest $request )
     {
         User::create([
             'login' => $request->get('login'),
@@ -55,11 +57,15 @@ class UserslistController extends Controller
             'is_eaten' => intval($request->get('is_eaten')),
             'last_logined_date' => Carbon::now()
         ]);
-        $message = 'New user saved!';
-        $cities = City::all();
-        return view('users.create', [
-            'cities' => $cities,
-        ])->with(['message' => $message]);
+        return redirect()->back()->with('success', 'New user created!');
+    }
+
+    public function create()
+    {
+        return view('users.create',
+        [
+            'cities' => City::all(),
+        ]);
     }
 
     public function show(Request $request)

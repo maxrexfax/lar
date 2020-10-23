@@ -29,6 +29,8 @@ class User extends Authenticatable
         'city_id',
         'is_eaten',
         'last_logined_date',
+        'last_logined_ip',
+        'last_logined_city',
     ];
 
     /**

@@ -29,6 +29,8 @@ Route::get('/userslist/show', [UserslistController::class, 'show'])->name('users
 
 Route::match(['get', 'post'],'/userslist/create', [UserslistController::class, 'create'])->name('userslist.create');
 
+Route::match(['get', 'post'],'/userslist/store', [UserslistController::class, 'store'])->name('userslist.store');
+
 Route::match(['get', 'post'],'/userslist/edit', [UserslistController::class, 'edit'])->name('userslist.edit');
 
 Route::post('/userslist/editsave', [UserslistController::class, 'save'])->name('userslist.save');

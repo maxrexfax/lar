@@ -18,7 +18,12 @@
                     <div class="card-header">{{ __('Create new user') }}</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{route('userslist.create')}}">
+                        @if (session()->exists('success'))
+                            <div class="alert alert-success center-text" role="alert">
+                                {{session()->get('success')}}
+                            </div>
+                        @endif
+                        <form method="POST" action="{{route('userslist.store')}}">
                             @csrf
 
                             <div class="form-group row">
@@ -175,12 +180,6 @@
                                 </div>
                             </div>
                         </form>
-
-                        <div class="center-text">
-                            @if(isset($message))
-                                {{$message}}
-                            @endif
-                        </div>
                     </div>
                 </div>
             </div>

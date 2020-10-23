@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use DB;
@@ -43,7 +44,9 @@ class MessageController extends Controller
             ->where('messages.target_id', '=', $user['id'])
             ->get();
 
-        return view('messages.list', [
+        return view('messages.list',
+        [
+            'code' => JsonResponse::HTTP_OK,
             'messages' => $messages,
             'users' => $users,
             'logineduser' => $user,
