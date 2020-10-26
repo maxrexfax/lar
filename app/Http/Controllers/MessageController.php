@@ -61,7 +61,7 @@ class MessageController extends Controller
             'target_id' => $request->get('target_id'),
             'author_id' => $request->get('author_id'),
             'text' => $request->get('text'),
-            'message_date' => Carbon::now()
+            'message_date' => Carbon::now(),
         ]);
     }
 

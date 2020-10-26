@@ -135,7 +135,7 @@ class UserslistController extends Controller
             $user->is_eaten = !$user->is_eaten;
         }
         $user->save();
-        return \Redirect::route('/userslist');
+        return redirect('/userslist');
     }
 
     public function filteruserslist(Request $request)

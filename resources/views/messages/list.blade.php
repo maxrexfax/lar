@@ -102,7 +102,7 @@
                     <div style="width: 100%">
                         <span id="span_notification"></span>
                         <button class="glyphicon glyphicon-remove" data-dismiss="modal" title="Close dialog" onclick="stopTimer()"></button>
-                        <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages()"></button>
+                        <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages({{$logineduser->id}})"></button>
                         <button class="glyphicon glyphicon-plus" title="Send message" onclick="sendNewMessage()"></button>
                     </div>
                 </div>

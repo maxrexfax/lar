@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->string('phone_number')->nullable();
             $table->unsignedBigInteger('city_id')->nullable();
             $table->boolean('is_eaten')->nullable();
-            $table->date('last_logined_date')->nullable();
+            $table->dateTime('last_logined_date')->nullable();
             $table->string('last_logined_ip')->nullable();
             $table->string('last_logined_city')->nullable();
             $table->rememberToken();

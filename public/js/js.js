@@ -2,9 +2,7 @@
 var obj;
 var numberOfMessages;
 var messagesChecker;
-
 obj = {
-
     MarkUserObj : function(id) {
         if(confirm("Really?")) {
             let xhttp;
@@ -35,7 +33,7 @@ obj = {
         window.location.reload();
     },
 //set login to span in modal window and start function getAllMessages
-    editModalWindowOutObj : function(author_id, target_id, login, logined_user_id) {
+    editModalWindowOutObj : function(author_id, target_id, login) {
         let spanForLogin = document.getElementById("loginSpan");
         spanForLogin.innerText = login;
         numberOfMessages = 0;
@@ -50,7 +48,7 @@ obj = {
         let spanNotif = document.getElementById('span_notification');
         let divModalContainer = document.getElementById("modalID");
         if(divModalContainer.style.display=='none'){
-            messagesChecker.clearTimeout();
+            clearInterval(messagesChecker);
         }
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -81,7 +79,7 @@ obj = {
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 let res = this.responseText;
-                obj.printAllMessagesObj(author_id, target_id, res, author_id);
+                obj.printAllMessagesObj(author_id, target_id, res);
             }
         };
         let url = this.getClearUrl() + '/show?target_id=' + target_id;
@@ -90,13 +88,13 @@ obj = {
     },
 
     //This func. take json string with messages and print them in modal window
-    printAllMessagesObj : function(author_id, target_id, jsonText, logined_user_id) {
+    printAllMessagesObj : function(author_id, target_id, jsonText) {
         let resArray = JSON.parse(jsonText);
         numberOfMessages = resArray.length;
         let resHtml = '';
         for (let i = 0; i < resArray.length; i ++) {
             resHtml+='<div class="msg_class ';
-            if (resArray[i]['author_id'] == logined_user_id) {
+            if (resArray[i]['author_id'] == author_id) {
                 resHtml+='float-right"';
             } else {
                 resHtml+='float-left"';
@@ -130,7 +128,7 @@ obj = {
     //func insert user data from select input to modal window
     prepareDataToWriteMessageObj : function (author_id) {
         let selectInput = document.getElementById('selectNewUser');
-        this.editModalWindowOutObj(author_id, selectInput.options[selectInput.selectedIndex].value, selectInput.options[selectInput.selectedIndex].text, 0);
+        this.editModalWindowOutObj(author_id, selectInput.options[selectInput.selectedIndex].value, selectInput.options[selectInput.selectedIndex].text);
     },
 
     printDate : function(){
@@ -221,7 +219,10 @@ obj = {
         let url = window.location.href;
         url = url.slice(0, url.indexOf("map"));
         return url;
-    }
+    },
+
+
+
 };
 
 function MarkUser(id) {
@@ -237,7 +238,7 @@ function unMarkUser(id) {
 }
 
 function editModalWindowOut(author_id, target_id, login, logined_user_id) {
-    obj.editModalWindowOutObj(author_id, target_id, login, logined_user_id);
+    obj.editModalWindowOutObj(author_id, target_id, login);
 }
 
 function sendNewMessage() {
@@ -275,3 +276,4 @@ $(document).ready(function() {
         }
     });
 });
+
