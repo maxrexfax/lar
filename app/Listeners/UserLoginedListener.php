@@ -8,10 +8,12 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
 class UserLoginedListener
 {
+    const IPINFODB_COM_API_KEY = '0dc12c558b6916f9dbfe904b5528ad2acdcea75c44d3c14d29c2ad67f1e87bb0';
     private $ipApiKey;
     /**
      * Create the event listener.
@@ -26,17 +28,37 @@ class UserLoginedListener
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  UserLogined  $event
      * @return void
      */
     public function handle()
     {
         $user = Auth::user();
-        $user_ip = json_decode(file_get_contents("https://api.ipify.org/?format=json"));
-        $userInfo = json_decode(file_get_contents("http://ipinfo.io/".$user_ip->ip."/json"));
-        $user->last_logined_date = Carbon::now()/*->toDateTimeString()*/;
-        $user->last_logined_ip = $user_ip->ip;
-        $user->last_logined_city = $userInfo->city;
+        echo $_POST['client_ip'];//js on login page finds clients IP
+        $user_ip = '';
+        if ($_POST['client_ip']) {
+            $user_ip = $_POST['client_ip'];
+        } elseif ($user_location = json_decode(file_get_contents("https://api.ipify.org/?format=json"))) {
+            $user_ip = $user_location->ip;
+        } else{
+            $user_ip = \Request::ip();
+        }
+
+        $user_info = json_decode(file_get_contents("http://ipinfo.io/".$user_ip."/json"));
+        $url = 'http://api.ipinfodb.com/v3/ip-city/?format=json&key='.self::IPINFODB_COM_API_KEY.'&ip='.$user_ip;
+        $resArray = json_decode(file_get_contents($url), true);
+        $user->last_logined_date = Carbon::now();
+        $user->last_logined_ip = isset($user_ip) ? $user_ip : '0:0:0:0';
+        
+        if ($resArray['cityName']) {
+            $user->last_logined_city = $resArray['cityName'];
+        } elseif($user_info) {
+            $user->last_logined_city = $user_info->city;
+        } else {
+            $user->last_logined_city = 'Unknown';
+        }
+
         $user->save();
     }
+
 }

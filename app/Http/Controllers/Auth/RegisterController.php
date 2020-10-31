@@ -21,8 +21,10 @@ class RegisterController extends Controller
     | provide this functionality without requiring any additional code.
     |
     */
-
     use RegistersUsers;
+
+    const ROLE_ID_ADMIN = 1;
+    const ROLE_ID_USER = 3;
 
     /**
      * Where to redirect users after registration.
@@ -70,6 +72,9 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role_id' => self::ROLE_ID_USER,
+            'city_id' => 1,
+            'is_eaten' => 0,
         ]);
     }
 }

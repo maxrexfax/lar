@@ -23,16 +23,15 @@ class MessageController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $users = User::all();
-        $messages = Message::all();//debug - for control
 
         $mesListOut = DB::table('messages')
             ->leftJoin('users', 'messages.target_id', '=', 'users.id')
             ->select('users.id as user_id')
             ->addSelect('users.login')
             ->addSelect('messages.target_id')
+            ->addSelect('messages.author_id')
             ->distinct()
-            ->where('messages.author_id', '=', $user['id'])
+            ->where('messages.author_id', '=', $user->id)
             ->get();
 
         $mesListIn = DB::table('messages')
@@ -40,15 +39,16 @@ class MessageController extends Controller
             ->select('users.id as user_id')
             ->addSelect('users.login')
             ->addSelect('messages.author_id')
+            ->addSelect('messages.target_id')
             ->distinct()
-            ->where('messages.target_id', '=', $user['id'])
+            ->where('messages.target_id', '=', $user->id)
             ->get();
 
         return view('messages.list',
         [
             'code' => JsonResponse::HTTP_OK,
-            'messages' => $messages,
-            'users' => $users,
+            'messages' => Message::all(),
+            'users' => User::all(),
             'logineduser' => $user,
             'mesListOut' => $mesListOut,
             'mesListIn' => $mesListIn,
@@ -61,7 +61,7 @@ class MessageController extends Controller
             'target_id' => $request->get('target_id'),
             'author_id' => $request->get('author_id'),
             'text' => $request->get('text'),
-            'message_date' => Carbon::now(),
+            'message_date' => Carbon::now()
         ]);
     }
 
@@ -82,6 +82,21 @@ class MessageController extends Controller
             ->get();
 
         return response()->json($correspondenseList);
+    }
+
+
+    public function showCount(Request $request)
+    {
+        $author_id = $request->get('author_id');
+        $target_id = $request->get('target_id');
+        $correspondenseList = DB::table('messages')
+            ->leftJoin('users', 'messages.target_id', '=', 'users.id')
+            ->whereIn('messages.author_id', [$target_id, $author_id])
+            ->whereIn('messages.target_id', [$target_id, $author_id])
+            ->count('messages.id');
+
+       // return response()->json($correspondenseList)->with(['td_id' => $request->get('id')]);
+        return $request->get('id').':'.$correspondenseList;
     }
 
 }

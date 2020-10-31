@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserEditRequest;
+use App\Http\Requests\CityRequest;
 use App\Models\City;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use \Validator;
 use Illuminate\Http\Request;
@@ -14,18 +17,19 @@ use App\Models\User;
 use DB;
 use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Hash;
-
+use const http\Client\Curl\AUTH_ANY;
 
 
 class UserslistController extends Controller
 {
-    private $paginQuantity;
-    private $ipApiKey;
+   public const PAGINATION_QUANTITY_VALUE = 15;
+    const ROLE_ID_ADMIN = 1;
+    const ROLE_ID_USER = 3;
+
     public function __construct()
     {
         $this->middleware('auth');
-        $this->paginQuantity = 15;
-        $this->ipApiKey = '0dc12c558b6916f9dbfe904b5528ad2acdcea75c44d3c14d29c2ad67f1e87bb0';
+        $this->paginationQuantity = self::PAGINATION_QUANTITY_VALUE;
     }
 
     public function index(Request $request)
@@ -35,99 +39,115 @@ class UserslistController extends Controller
 
     public function createform()
     {
-        $cities = City::all();
         return view('users.create', [
-            'cities' => $cities
+            'cities' => City::orderBy('name','asc')->get(),
         ]);
     }
 
     public function store(UserRequest $request )
     {
         User::create([
-            'login' => $request->get('login'),
-            'password' => Hash::make( $request->get('password')),
-            'first_name' => $request->get('first_name'),
-            'middle_name' => $request->get('middle_name'),
-            'last_name' => $request->get('last_name'),
-            'birthday' => $request->get('birthday'),
-            'email' => $request->get('email'),
+            'login' => $request->post('login'),
+            'password' => Hash::make( $request->post('password')),
+            'first_name' => $request->post('first_name'),
+            'middle_name' => $request->post('middle_name'),
+            'last_name' => $request->post('last_name'),
+            'birthday' => $request->post('birthday'),
+            'email' => $request->post('email'),
             'email_verified_at' =>  Carbon::now(),
-            'phone_number' => $request->get('phone_number'),
-            'city_id' => intval($request->get('city_id')),
-            'is_eaten' => intval($request->get('is_eaten')),
+            'phone_number' => $request->post('phone_number'),
+            'city_id' => $request->post('city_id'),
+            'role_id' => self::ROLE_ID_USER,
+            'is_eaten' => $request->post('is_eaten'),
             'last_logined_date' => Carbon::now()
         ]);
-        return redirect()->back()->with('success', 'New user created!');
+        return redirect()->back()->withSuccess('New user created!');
+
     }
 
     public function create()
     {
         return view('users.create',
         [
-            'cities' => City::all(),
+            'cities' => City::orderBy('name','asc')->get(),
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function show(Request $request)
     {
-        $cities = City::all();
-        $id = $request->get('id');
-        $user = User::findOrFail($id);
         return view('users.view', [
-            'cities' => $cities,
-            'user' => $user
+            'cities' => City::orderBy('name','asc')->get(),
+            'user' => User::findOrFail($request->get('id')),
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function edit(Request $request)
     {
-        $id = $request->get('id');
-        $cities = City::all();
-        $user = User::findOrFail($id);
-        //$user = User::where('id', $id)->first();
         return view('users.edit', [
-            'cities' => $cities,
-            'user' => $user
+            'cities' => City::orderBy('name','asc')->get(),
+            'user' => User::findOrFail($request->get('id'))
         ]);
     }
 
+    /**
+     * @param UserEditRequest $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function save(UserEditRequest $request)
     {
-        Validator::make($request->all(), [
-            'login' => ['required', 'max:255', Rule::unique('users')->ignore($request->get('hiddenid'), 'id')],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($request->get('hiddenid'), 'id')],
-        ])->validate();
+        $userIn = User::find($request->post('id'));
+        $message = '';
+        $tmpHashedPassword = $userIn->password;
 
-        $user = User::where('id', $request->get('hiddenid'))->first();
-        $user->login = $request->get('login');
-        $user->first_name = $request->get('first_name');
-        $user->middle_name = $request->get('middle_name');
-        $user->last_name = $request->get('last_name');
-        $user->birthday = $request->get('birthday');
-        $user->email = $request->get('email');
-        $user->phone_number = $request->get('phone_number');
-        $user->city_id = $request->get('city_id');
-        $user->is_eaten = $request->get('is_eaten');
+        $userIn->fill($request->post());
 
-        if($request->get('password'))
+        if($request->get('password') && ((Auth::user()->role_id==self::ROLE_ID_ADMIN) || Auth::user()->id==$userIn->id))
         {
-            $user->password = Hash::make($request->get('password'));
+            $userIn->password = Hash::make($request->get('password'));
+            $message = 'Password has been changed!';
+        }else{
+            $userIn->password = $tmpHashedPassword;
+            $message = 'Only admin can change password!';
         }
-//вариант на будущее $user = User::find($id); $user->fill($request->all())->save();
-        $user->save();
-        return $this->showAllUsers($request);
+
+        $userIn->save();
+
+        return $this->showAllUsers($request)->with('message', $message);
     }
 
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function destroy(Request $request)
     {
-        $id = $request->get('id');
-        $user = User::find($id);
-        $user->delete();
-        return $this->showAllUsers($request);
+        $message = '';
+        if ($request->get('id') && Auth::user()->role_id==self::ROLE_ID_ADMIN) {
+            $id = $request->get('id');
+            $user = User::find($id);
+            if ($user) {
+                $user->delete();
+                $message = 'User has been deleted!';
+            }
+        } else {
+            $message = 'Only admin can delete user!';
+        }
+
+        return $this->showAllUsers($request)->with('message', $message);
     }
 
-//if incomes $input['markid']) - selected user markes as infected
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function changeHealthStatus(Request $request)
     {
         if ($request->get('id')) {
@@ -135,59 +155,53 @@ class UserslistController extends Controller
             $user->is_eaten = !$user->is_eaten;
         }
         $user->save();
-        return redirect('/userslist');
+        return redirect('userslist');
     }
 
     public function filteruserslist(Request $request)
     {
-        if ($request->get('paginQuant')) {
-            $this->paginQuantity = $request->get('paginQuant');
+        if ($request->get('paginationQuantity')) {
+            $this->paginationQuantity = $request->get('paginationQuantity');
         }
-        $message = 'Attention! Users list filtering enabled! Click on "Reset filter" button to see all users!';
-        $cities = City::all();
-        $input = $request->input();
-        if(!empty($request->get('citiessearch')))
-        {
-            $users = User::where('city_id', $request->get('citiessearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
+
+        $message = 'Attention! Click on "Reset filter" button to see all users! Users list filtering enabled by ';
+        if (!empty($request->get('citiessearch'))) {
+            $message .= 'city';
+            $users = User::where('city_id', $request->get('citiessearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginationQuantity);
             return view('users.list', [
-                'cities' => $cities,
+                'cities' => City::orderBy('name','asc')->get(),
                 'users' => $users,
-                'quantity' => $this->paginQuantity,
+                'quantity' => $this->paginationQuantity,
             ])->with(['message' => $message]);
+        } elseif ($request->get('namesearch')) {
+            $message .= 'username';
+            $users = User::where('first_name', $request->get('namesearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginationQuantity);
+        } elseif ($request->get('loginsearch') ) {
+            $message .= 'user login';
+            $users = User::where('login', $request->get('loginsearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginationQuantity);
+        } elseif ($request->get('emailsearch')) {
+            $message .= 'email';
+            $users = User::where('email', $request->get('emailsearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginationQuantity);
+        } else {
+            $users = User::orderBy('last_logined_date','desc')->simplePaginate($this->paginationQuantity);
+            $message = "Empty choice";
         }
-        elseif ($request->get('namesearch'))
-        {
-            $users = User::where('first_name', $request->get('namesearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
-        }
-        elseif ($request->get('loginsearch') )
-        {
-            $users = User::where('login', $request->get('loginsearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
-        }
-        elseif ($request->get('emailsearch'))
-        {
-            $users = User::where('email', $request->get('emailsearch'))->orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
-        }
-        else
-        {
-            $users= User::orderBy('last_logined_date','desc')->get();
-        }
+
         return view('users.list', [
-            'cities' => $cities,
+            'cities' => City::orderBy('name','asc')->get(),
             'users' => $users,
-            'quantity' => $this->paginQuantity,
+            'quantity' => $this->paginationQuantity,
         ])->with(['message' => $message]);
     }
 
     public function map(Request $request)
     {
-        $cities = City::all();
-        $users= User::orderBy('last_logined_date','desc')->get();
-        $message = "Test message";
+        $users = User::orderBy('last_logined_date','desc')->get();
         return view('users.map', [
-            'cities' => $cities,
+            'cities' => City::orderBy('name','asc')->get(),
             'users' => $users,
-            'quantity' => $this->paginQuantity,
-        ])->with(['message' => $message]);
+            'quantity' => $this->paginationQuantity,
+        ]);
     }
 
     public function maplist()
@@ -202,20 +216,41 @@ class UserslistController extends Controller
             ->get();
 
         return response()->json($citieslist);
+    }
 
+    public function mapadd()
+    {
+        return view('users.city', [
+            'cities' => City::orderBy('name','asc')->get(),
+        ]);
+    }
+
+    public function mapsave(CityRequest $request)
+    {
+        City::create([
+            'name' => $request->get('name'),
+            'lat' => $request->get('lat'),
+            'lon' => $request->get('lon'),
+            'description' => $request->get('description'),
+        ]);
+        return redirect()->back()->withSuccess('New city created!');
+        /*return view('users.city', [
+            'cities' => City::orderBy('name','asc')->get(),
+        ])->withSuccess('New city created!');*/
     }
 
     private function showAllUsers(Request $request)
     {
-        if ($request->get('paginQuant')) {
-            $this->paginQuantity = $request->get('paginQuant');
+        if ($request->get('paginationQuantity')) {
+            $this->paginationQuantity = $request->get('paginationQuantity');
         }
-        $users = User::orderBy('last_logined_date','desc')->simplePaginate($this->paginQuantity);
-        $cities = City::all();
+
+        $users = User::orderBy('last_logined_date','desc')->simplePaginate($this->paginationQuantity);
+
         return view('users.list', [
             'users' => $users,
-            'cities' => $cities,
-            'quantity' => $this->paginQuantity,
+            'cities' => City::orderBy('name','asc')->get(),
+            'quantity' => $this->paginationQuantity,
         ]);
     }
 

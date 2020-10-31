@@ -5,8 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">{{ __('All messages page') }}</div>
-                    <br>
+                    <div class="card-header center-text">{{ __('Messaging page') }}</div>
                     <div class="card-body">
                         @if (session('status'))
                             <div class="alert alert-success" role="alert">
@@ -16,11 +15,12 @@
                         @endif
                             <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
                                 <h3 class="center-text">Outgoing messages</h3>
-                                <table border="1px" class="table table-hover table stripped" style="margin-top: 13px;">
+                                <table border="1px" class="table">
                                     <thead>
                                         <tr>
                                             <th>Login</th>
                                             <th>Action</th>
+                                            <th>Quantity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -28,6 +28,7 @@
                                         <tr>
                                             <td>{{$mlo->login}}</td>
                                             <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="editModalWindowOut({{$logineduser->id}}, {{$mlo->target_id}}, 'to {{$mlo->login}}', {{$logineduser->id}})">Message list</span></td>
+                                            <td class="msg_quantity" data-target_id="{{$mlo->target_id}}" data-author_id="{{$logineduser->id}}"></td>
                                         </tr>
                                     @endforeach
                                     </tbody>
@@ -35,11 +36,12 @@
                             </div>
                             <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
                                 <h3 class="center-text">Incoming messages</h3>
-                                <table class="table table-hover table stripped">
+                                <table class="table">
                                     <thead>
                                     <tr>
                                         <th>Login</th>
                                         <th>Action</th>
+                                        <th>Quantity</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -47,14 +49,22 @@
                                         <tr>
                                             <td>{{$mli->login}}</td>
                                             <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="editModalWindowOut({{$logineduser->id}}, {{$mli->author_id}}, 'from {{$mli->login}}', {{$logineduser->id}})">Message list</span></td>
+                                            <td class="msg_quantity" data-target_id="{{$logineduser->id}}" data-author_id="{{$mli->user_id}}"></td>
                                         </tr>
                                     @endforeach
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
-                                <h3 class="center-text">Choose user and write message</h3>
-                                <table class="table table-hover table stripped">
+                            <div class="table-responsive col-lg-3 col-md-4 col-sm-12">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            Choose user
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
                                     <tr>
                                         <td><select id="selectNewUser" name="selectNewUser">
                                                 @foreach($users as $u)
@@ -63,21 +73,25 @@
                                                     @endif
                                                 @endforeach
                                             </select></td>
+                                    </tr>
+                                    <tr>
                                         <td><span class="btn btn-primary" data-toggle="modal" data-target="#modalID" onclick="prepareDataToWriteMessage({{$logineduser->id}})">Write new message</span></td>
                                     </tr>
-
+                                    </tbody>
                                 </table>
                             </div>
                     </div>
-                    <div id="main">
-                        <div class="accord_body">
-                            <div class="accord_header">
-                                <h2>List of ALL messages (for debug)</h2>
-                            </div>
-                            <div class="accord_content">
-                                @foreach($messages as $message)
-                                    The author <i>{{$message->author->login}}</i> wrotes to user <i>{{$message->recipient->login}}</i> message: <b> {{$message->text}}</b><br>
-                                @endforeach
+                    <div class="table-responsive col-lg-6 col-md-6 col-sm-12">
+                        <div id="main">
+                            <div class="accord_body">
+                                <div class="accord_header">
+                                    <h2>ALL mesgs</h2>
+                                </div>
+                                <div class="accord_content">
+                                    @foreach($messages as $message)
+                                        The author <i>{{$message->author->login}}</i> wrotes to user <i>{{$message->recipient->login}}</i> message: <b> {{$message->text}}</b><br>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -102,11 +116,16 @@
                     <div style="width: 100%">
                         <span id="span_notification"></span>
                         <button class="glyphicon glyphicon-remove" data-dismiss="modal" title="Close dialog" onclick="stopTimer()"></button>
-                        <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages({{$logineduser->id}})"></button>
+                        <button class="glyphicon glyphicon-refresh" title="Refresh dialog" onclick="reloadMessages()"></button>
                         <button class="glyphicon glyphicon-plus" title="Send message" onclick="sendNewMessage()"></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        window.onload = function (){
+            showMessagesQuantity();
+        }
+    </script>
 @endsection

@@ -15,7 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">{{ __('Create new user') }}</div>
+                    <div class="card-header center-text">{{ __('Create new user') }}</div>
 
                     <div class="card-body">
                         @if (session()->exists('success'))
@@ -135,6 +135,14 @@
                                         @endforeach
                                     </select>
 
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="city_id" class="col-md-4 col-form-label text-md-right"> </label>
+
+                                <div class="col-md-6">
+                                    <a target="_blank" class="float-right badge badge-secondary" href="{{route('userslist.mapadd')}}" id="city_id">Add new city if not in list</a>
                                 </div>
                             </div>
 

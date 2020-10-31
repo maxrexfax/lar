@@ -1,119 +1,189 @@
-html {
-    font-size: 1em;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-.miniwidth {
-    min-width: 100px;
-}
-.margin-els{
-    margin-left: 3px;
-    margin-right: 3px;
-}
-.center-text{
-    text-align: center;
+@import url(https://fonts.googleapis.com/css?family=Nunito);html {
+  font-size: 1em;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.margin-horizontal-25{
+.label-remember-on-login {
     margin-left: 25px;
-    margin-right: 25px;
+}
+
+.btn-reset-filter-search {
+  width: 100px;
+}
+
+.max-width-button-search-filter {
+  max-width: 200px;
+}
+
+.input-search-filter-users {
+  max-width: 250px;
+  margin: 2px;
+}
+
+.div-set-paginatin-quantity {
+  max-width: 300px;
+  margin: 2px;
+  float: right;
+  display: flex;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.input-for-pagination-quantity {
+  width: 50px;
+  margin-right: 3px;
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+#form-pagin-quantity {
+  margin: 5px 1px;
+}
+
+.pagination-input input {
+  width: 60px;
+}
+
+.filer-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.form-create-city input,
+.form-create-city button {
+  margin-bottom: 3px;
 }
 
 table {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
-table, th, td {
-    border: 1px solid grey;
+table,
+th,
+td {
+  border: 1px solid grey;
 }
 
-.msg_class{
-    border: 1px solid aquamarine;
-    border-radius: 10px;
-    background-color: lightskyblue;
-    width: 90%;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 3px;
+.msg_class {
+  border: 1px solid aquamarine;
+  border-radius: 10px;
+  background-color: lightskyblue;
+  width: 90%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 3px;
 }
 
-.msg-date{
-    font-size: 0.75em;
-    margin-bottom: -5px;
+.msg-date {
+  font-size: 0.75em;
+  margin-bottom: -5px;
 }
 
-#span_notification{
-    float: left;
+#span_notification {
+  float: left;
 }
 
-.for-div-table{
-    display: block;
-    width: 100%;
+.div-for-form-search {
+  display: block;
+  width: 100%;
 }
 
-.flex-class{
-    display: flex;
+.width-300 {
+  width: 300px;
 }
 
-.width-300{
-    width: 300px;
+.max-width-300 {
+  max-width: 300px;
 }
 
-.form-map{
-    width: 350px;
-    margin-left: auto;
-    margin-right: auto;
+.div-for-map {
+  width: 100%;
+  height: 75vh;
+  background-color: lightgray;
+  margin-top: 5px;
+  border-radius: 5px;
 }
 
-#map{
-    width: 100%;
-    height: 75vh;
-    background-color:lightgray;
+.table-with-city-list td,
+.table-with-city-list th {
+  width: 33%;
+}
+
+.form-map {
+  width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.max-height-cities {
+  max-height: 140px;
+  overflow: auto;
+}
+
+.tableFixHead {
+  overflow: auto;
+  max-height: 200px;
+}
+
+.tableFixHead thead th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background-color: grey;
+  z-index: 3;
+}
+
+.tableFixHead td {
+  border: 1px solid grey;
 }
 
 /*Accordion START*/
+
 #main {
-    max-width: 1000px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
+  max-width: 1000px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .accord_body {
-    width: 100%;
+  width: 100%;
 }
 
 .accord_header {
-    background-color: blanchedalmond;
-    border: 1px solid black;
-    text-align: center;
-    border-radius: 20px;
-    width: 100%;
-    height: 50px;
-    z-index: 10;
-    font-size: 100%;
-    font-weight: bold;
-    margin: 5px 0 5px 0;
-    padding-bottom: 10px;
-    -webkit-box-sizing: border-box;
-    /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;
-    /* Firefox, other Gecko */
-    box-sizing: border-box;
+  background-color: blanchedalmond;
+  border: 1px solid black;
+  text-align: center;
+  border-radius: 20px;
+  width: 100%;
+  height: 50px;
+  z-index: 10;
+  font-size: 100%;
+  font-weight: bold;
+  margin: 5px 0 5px 0;
+  padding-bottom: 10px;
+  /* Safari/Chrome, other WebKit */
+  /* Firefox, other Gecko */
+  box-sizing: border-box;
 }
 
 .accord_content {
-    background-color: rgb(204, 181, 147);
-    border: 1px solid black;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    border-radius: 0 0 20px 20px;
-    padding: 10px;
-    margin-top: -6px;
-    -webkit-box-sizing: border-box;
-    /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;
-    /* Firefox, other Gecko */
-    box-sizing: border-box;
+  background-color: #ccb593;
+  border: 1px solid black;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  border-radius: 0 0 20px 20px;
+  padding: 10px;
+  margin-top: -6px;
+  /* Safari/Chrome, other WebKit */
+  /* Firefox, other Gecko */
+  box-sizing: border-box;
 }
+
 /*Accordion END*/
+

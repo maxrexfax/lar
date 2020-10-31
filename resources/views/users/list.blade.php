@@ -5,16 +5,14 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header center-text">
-                            {{ __('List of all users') }}
+                    <div class="card-header center-text">{{ __('List of all users') }}
+                        <form method="GET" action="{{route('userslist')}}" id="form-pagin-quantity" class="float-right">
+                            <div class="div-set-paginatin-quantity">
+                                <input value="{{$quantity}}" type="number" name="paginationQuantity" id="paginationQuantity" class="input-for-pagination-quantity" placeholder="15">
+                                <button type="submit" class="btn btn-primary set-horisontal-margin-3">Users per page</button>
+                            </div>
+                        </form>
                     </div>
-                            <form method="GET" action="{{route('userslist')}}" style="margin: 5px 0;">
-                                <div class="flex-class width-300 margin-els float-right">
-                                <input value="{{$quantity}}" type="number" name="paginQuant" id="paginQuant" class="margin-els" size="5" placeholder="15">
-                                <button type="submit" class="btn btn-primary btn-block margin-els">Users on the page</button>
-                                </div>
-                            </form>
-                    <br>
                     <div class="card-body">
                         @if (session('status'))
                             <div class="alert alert-success" role="alert">
@@ -22,33 +20,34 @@
                             </div>
                             {{ __('List of users:') }}
                         @endif
-                    <div class="for-div-table">
-                        <form method="GET" action="{{route('userslist.filter')}}" style="margin-bottom: 5px;">
-                        <div style="display: flex;">
-                            <a href="{{route('userslist')}}" class="btn btn-primary btn-block">Reset filter</a>
-                            <input type="text" class="form-control miniwidth margin-els" id="namesearch" name="namesearch" placeholder="Search by name...">
-                            <input value="" type="text" class="form-control miniwidth margin-els" id="loginsearch" name="loginsearch" placeholder="Search by login...">
-                            <input value="" type="text" class="form-control miniwidth margin-els" id="emailsearch" name="emailsearch" placeholder="Search by email...">
-                            <select name="citiessearch" id="citiessearch" class="margin-els">
+                    <div class="div-for-form-search">
+                        <form method="GET" action="{{route('userslist.filter')}}">
+                        <div id="filer-inputs" class="filer-inputs">
+                            <a href="{{route('userslist')}}" id="btn-reset" class="btn btn-primary btn-reset-filter-search">Reset filter</a>
+                            <input type="text" class="form-control input-search-filter-users" id="namesearch" name="namesearch" placeholder="Search by name...">
+                            <input value="" type="text" class="form-control input-search-filter-users" id="loginsearch" name="loginsearch" placeholder="Search by login...">
+                            <input value="" type="text" class="form-control input-search-filter-users" id="emailsearch" name="emailsearch" placeholder="Search by email...">
+                            <select name="citiessearch" id="citiessearch" class="input-search-filter-users">
                                 <option value="0" selected>Not set</option>
                                 @foreach($cities as $city)
                                 <option value="{{$city->id}}">{{$city->name}}</option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="btn btn-primary btn-block miniwidth margin-els"><span class="glyphicon glyphicon-search"></span></button>
+                            <button type="submit" class="btn btn-primary max-width-button-search-filter"><span class="glyphicon glyphicon-search"></span></button>
                         </div>
                         </form>
+                        <div style="overflow-x:auto;">
                         <table class="table table-hover table stripped table-bordered">
                             <thead>
                                 <tr>
                                     <th scope="col">Id</th>
                                     <th scope="col">Login<br><i>Last logined date</i></th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
+                                    <th scope="col">Name<br><i>Last logined ip</i></th>
+                                    <th scope="col">Email<br><i>Last logined city</i></th>
                                     <th scope="col">Is eaten</th>
                                     <th scope="col">City</th>
                                     <th scope="col">Mark</th>
-                                    <th scope="col">Buttons</th>
+                                    <th scope="col">&nbsp;Buttons&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,8 +55,8 @@
                                 <tr>
                                     <td scope="col">{{$user->id}}</td>
                                     <td scope="col">{{$user->login}}<br><i>{{$user->last_logined_date}}</i></td>
-                                    <td scope="col">{{$user->first_name}}</td>
-                                    <td scope="col">{{$user->email}}</td>
+                                    <td scope="col">{{$user->first_name}}<br>{{$user->last_logined_ip}}</td>
+                                    <td scope="col">{{$user->email}}<br>{{$user->last_logined_city}}</td>
                                     <td scope="col">
                                         @if($user->is_eaten==1)
                                             <span class="badge badge-danger">Infected</span>
@@ -88,8 +87,9 @@
                             @endforeach
                             </tbody>
                         </table>
+                        </div>
                         <div class="center-text">
-                        {{$users->appends(['paginQuant' => $quantity])->render()}}
+                        {{$users->appends(['paginationQuantity' => $quantity])->render()}}
                         </div>
                         <div class="center-text">
                             @if(isset($message))

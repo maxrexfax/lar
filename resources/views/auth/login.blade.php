@@ -9,6 +9,7 @@
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
+                        <input type="hidden" name="client_ip" id="client_ip" value="">
                         @csrf
 
                         <div class="form-group row">
@@ -44,7 +45,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
-                                    <label class="form-check-label margin-horizontal-25" for="remember">
+                                    <label class="form-check-label label-remember-on-login" for="remember">
                                         {{ __('Remember Me') }}
                                     </label>
                                 </div>
@@ -70,4 +71,10 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.onload = function (){
+        getClientIp();
+    }
+</script>
 @endsection

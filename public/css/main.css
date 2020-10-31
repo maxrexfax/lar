@@ -1,8 +1,3 @@
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
-
-// Variables
-@import 'variables';
 html {
     font-size: 1em;
     -webkit-tap-highlight-color: transparent;
@@ -58,10 +53,8 @@ html {
     margin-bottom: 3px;
 }
 
-.form-create-city {
-    input, button {
-        margin-bottom: 3px;
-    }
+.form-create-city input, button {
+    margin-bottom: 3px;
 }
 
 table {
@@ -112,10 +105,8 @@ table, th, td {
     border-radius: 5px;
 }
 
-.table-with-city-list {
-    td, th{
-        width: 33%;
-    }
+.table-with-city-list td, th{
+    width: 33%;
 }
 
 .form-map{
@@ -133,16 +124,11 @@ table, th, td {
     overflow: auto;
     max-height: 200px;
 }
-
-.tableFixHead {
-            thead {
-                    th {
-                        position: sticky;
-                        top: 0;
-                        background-color: grey;
-                        z-index: 3;
-                    }
-            }
+.tableFixHead thead th {
+    position: sticky;
+    top: 0;
+    background-color: grey;
+    z-index: 3;
 }
 .tableFixHead td {
     border: 1px solid grey;

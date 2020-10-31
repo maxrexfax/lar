@@ -2,13 +2,14 @@
 var obj;
 var numberOfMessages;
 var messagesChecker;
+
 obj = {
+
     MarkUserObj : function(id) {
         if(confirm("Really?")) {
             let xhttp;
             xhttp = new XMLHttpRequest();
             let urlcommand = this.getClearUrl()+ '/changeHealthStatus' + "?id="+id;
-            console.log('urlcommand=' + urlcommand);
             xhttp.open("GET", urlcommand, true);
             xhttp.send();
             setTimeout(this.reloadPage, 1000);
@@ -33,7 +34,7 @@ obj = {
         window.location.reload();
     },
 //set login to span in modal window and start function getAllMessages
-    editModalWindowOutObj : function(author_id, target_id, login) {
+    editModalWindowOutObj : function(author_id, target_id, login, logined_user_id) {
         let spanForLogin = document.getElementById("loginSpan");
         spanForLogin.innerText = login;
         numberOfMessages = 0;
@@ -70,7 +71,7 @@ obj = {
     },
 
     stopTimerObj : function (){
-        messagesChecker.clearTimeout();
+        clearInterval(messagesChecker);
     },
 
 //get JSON response with all messages
@@ -79,7 +80,7 @@ obj = {
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 let res = this.responseText;
-                obj.printAllMessagesObj(author_id, target_id, res);
+                obj.printAllMessagesObj(author_id, target_id, res, author_id);
             }
         };
         let url = this.getClearUrl() + '/show?target_id=' + target_id;
@@ -88,13 +89,13 @@ obj = {
     },
 
     //This func. take json string with messages and print them in modal window
-    printAllMessagesObj : function(author_id, target_id, jsonText) {
+    printAllMessagesObj : function(author_id, target_id, jsonText, logined_user_id) {
         let resArray = JSON.parse(jsonText);
         numberOfMessages = resArray.length;
         let resHtml = '';
         for (let i = 0; i < resArray.length; i ++) {
             resHtml+='<div class="msg_class ';
-            if (resArray[i]['author_id'] == author_id) {
+            if (resArray[i]['author_id'] == logined_user_id) {
                 resHtml+='float-right"';
             } else {
                 resHtml+='float-left"';
@@ -128,7 +129,7 @@ obj = {
     //func insert user data from select input to modal window
     prepareDataToWriteMessageObj : function (author_id) {
         let selectInput = document.getElementById('selectNewUser');
-        this.editModalWindowOutObj(author_id, selectInput.options[selectInput.selectedIndex].value, selectInput.options[selectInput.selectedIndex].text);
+        this.editModalWindowOutObj(author_id, selectInput.options[selectInput.selectedIndex].value, selectInput.options[selectInput.selectedIndex].text, 0);
     },
 
     printDate : function(){
@@ -221,9 +222,80 @@ obj = {
         return url;
     },
 
+    showMapToChooseCityObj : function (){
+        let arrLatLon = [];
+        let latValue = 45.55;
+        let lonValue = 35.55;
+        var mapOptions = {
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoom: 5,
+            center: {lat: parseFloat(latValue), lng: parseFloat(lonValue)}
+        };
+        var map = new google.maps.Map(document.getElementById('map-city'), mapOptions);
+        map.addListener("click", (mapsMouseEvent) => {
+            arrLatLon = JSON.parse(JSON.stringify(mapsMouseEvent.latLng.toJSON()));
+            document.getElementById('inp-city-lat').value = Number(arrLatLon['lat']).toFixed(6);
+            document.getElementById('inp-city-lon').value = Number(arrLatLon['lng']).toFixed(6);
+        });
+    },
 
+    showMessagesQuantityObj : function (){
+        let tdMsgQuantity = document.getElementsByClassName("msg_quantity");
+        for(let i = 0; i < tdMsgQuantity.length; i++){
+            tdMsgQuantity[i].setAttribute("id", i);
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let res = this.responseText;
+                    obj.findMesQuantityForTwoUsers(res);
+                }
+            };
+            let url = this.getClearUrl() + '/showCount?target_id=' + tdMsgQuantity[i].dataset.target_id + '&author_id=' + tdMsgQuantity[i].dataset.author_id + '&id=' + i;
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+    },
 
+    findMesQuantityForTwoUsers(res){
+        let tmpArr = res.split(":");
+        document.getElementById(tmpArr[0]).innerText = tmpArr[1];
+    },
+
+    getClientIpObj : function (){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let res = this.responseText;
+                let resArray = JSON.parse(res);
+                obj.sendClientIpToServer(resArray['ip']);
+                document.getElementById('client_ip').value = resArray['ip'];
+            }
+        };
+        let url = 'https://api.ipify.org/?format=json';
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    },
+
+    sendClientIpToServer(res) {
+        let xhttp = new XMLHttpRequest();
+        let url = this.getClearUrl();
+        let data = '?client_ip=' + res;
+        xhttp.open("GET", url + data, true);
+        xhttp.send();
+    }
 };
+
+function getClientIp() {
+    obj.getClientIpObj();
+}
+
+function showMapToChooseCity(){
+    obj.showMapToChooseCityObj();
+}
+
+function showMessagesQuantity(){
+    obj.showMessagesQuantityObj();
+}
 
 function MarkUser(id) {
     obj.MarkUserObj(id);
@@ -238,7 +310,7 @@ function unMarkUser(id) {
 }
 
 function editModalWindowOut(author_id, target_id, login, logined_user_id) {
-    obj.editModalWindowOutObj(author_id, target_id, login);
+    obj.editModalWindowOutObj(author_id, target_id, login, logined_user_id);
 }
 
 function sendNewMessage() {
@@ -276,4 +348,3 @@ $(document).ready(function() {
         }
     });
 });
-
