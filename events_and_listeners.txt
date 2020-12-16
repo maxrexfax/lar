@@ -1,0 +1,31 @@
+===============События и слушатели
+1 вариант В модели создать метод boot 
+ public static function boot()
+    {
+        //Log::info('Before boot', [1,2,3]);
+        $class = static::class;
+        Log::info('Before boot,  class='.$class);
+        parent::boot();
+        event(new onUserBootEvent());//прямой вызов слушателя событий, можно из любого места.
+        User::retrieved(function ($model){//доступ к полям создаваемого объекта
+            Log::info( $model->getAttributes());   //or $this->getAttributes()
+            $model->login = 'test_ch_login';
+        });
+    }
+
+2 вариант - создать файл слушателя и события далее два варианта 2 и 3
+2.1 - создать произвольную строку в EventServiceProvider
+'\App\Events\onUserBootEvent' => ['App\Listeners\UserListener@handle']
+2.2 - В консоли команда php artisan event:generate
+Результат - слушатель и ивент созданы.
+2.3 - event(new onUserBootEvent());//прямой вызов слушателя событий, можно из любого места.
+
+3 вариант - если в EventServiceProvider указано стандартное событие, то оно автоматом запустит указанный Listener
+'Illuminate\Auth\Events\Login' => [
+            'App\Listeners\UserLoginedListener@handle',
+        ],//во время логина всегда запускается UserLoginedListener метод handle
+        
+        
+php artisan make:event UserLogined
+php artisan make:listener UserLoginedListener --event="UserLogined"
+
