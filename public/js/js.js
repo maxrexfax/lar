@@ -349,3 +349,7 @@ $(document).ready(function() {
         }
     });
 });
+
+window.addEventListener("load", function(event) {
+    console.log("window.addEventListener (load) worked in js.js");
+});

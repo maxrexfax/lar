@@ -84,6 +84,10 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\City', 'id', 'city_id');
     }
 
+    public function getCityName()
+    {
+        return !empty($city = $this->city) ? $city->name : null;
+    }
 
     public function role()
     {
@@ -110,5 +114,9 @@ class User extends Authenticatable
         return $this->messageIn->where('author_id', $author_id)->count();
     }
 
+    public function test()
+    {
+        return '11111111111111111111';
+    }
 
 }

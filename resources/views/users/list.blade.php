@@ -65,7 +65,7 @@
                                         @endif
                                     </td>
                                     <td scope="col">
-                                        {{$user->city->name}}
+                                        {{$user->getCityName()}}
                                     </td>
                                     <td scope="col">
                                         <button type="submit" class="btn btn-secondary btn-block btn-sm" id="{{$user->id}}" onclick="MarkUser(id)">

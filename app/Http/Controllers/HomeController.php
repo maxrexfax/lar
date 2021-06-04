@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderShipped;
+use App\Models\Message;
+use App\Notifications\OrderCreated;
+use App\Order;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
@@ -134,5 +140,36 @@ class HomeController extends Controller
                'info' => $info1,
             'file'=> $fileName
         ]);
+    }
+
+    public function chat()
+    {
+        return View::make('test/chat',[
+
+        ]);
+    }
+
+
+    public function sendNotification()
+    {
+        $message = Message::find(1);
+        $details = [
+            'greeting' => 'Hi Artisan',
+            'body' => 'This is my first notification from ItSolutionStuff.com',
+            'thanks' => 'Thank you for using ItSolutionStuff.com tuto!',
+            'actionText' => 'View My Site',
+            'actionURL' => url('/'),
+            'order_id' => 101
+        ];
+
+        $user = User::find(1);
+        $resMail = Mail::to($user)->send(new OrderShipped($message));
+        //var_dump($order);
+        //var_dump($user);
+        echo 'resMail='; var_dump($resMail);
+
+        $resNotification = Notification::send($message, new OrderCreated($message, $details));
+        echo 'resNotification='; var_dump($resNotification);
+
     }
 }

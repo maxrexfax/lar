@@ -21,6 +21,7 @@
     <link rel="icon" href="{{ URL::asset('/css/favicon.ico') }}" type="image/x-icon"/>
     <!-- Scripts -->
     <script src="{{ asset('js/js.js') }}" defer></script>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -60,7 +61,7 @@
                             <a class="nav-link" href="{{route('userslist')}}">List of users</a>
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{route('userslist')}}/map">List of cities</a>
+                            <a class="nav-link" href="{{route('userslist.map')}}">List of cities</a>
                         </li>
                         <li class="nav-item active">
                             <a class="nav-link" href="{{route('messages')}}">List of messages</a>

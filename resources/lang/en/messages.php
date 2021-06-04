@@ -4,4 +4,5 @@
 
 return [
     'welcome' => 'Welcome to our application',
+    'cool medicines' => ''
 ];
